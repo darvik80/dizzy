@@ -1,0 +1,31 @@
+{
+  "columns": 41,
+  "image": "images\/dizzy.png",
+  "imageheight": 22,
+  "imagewidth": 1025,
+  "margin": 0,
+  "name": "dizzy_sprite",
+  "spacing": 0,
+  "tilecount": 41,
+  "tiledversion": "1.7.1",
+  "tileheight": 22,
+  "tiles": [
+    {
+      "animation": [
+        {
+          "duration": 150,
+          "tileid": 0
+        },
+        {
+          "duration": 150,
+          "tileid": 1
+        }
+      ],
+      "id": 0
+    }
+  ],
+  "tilewidth": 25,
+  "transparentcolor": "#51a2f3",
+  "type": "tileset",
+  "version": "1.6"
+}
