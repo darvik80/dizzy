@@ -29,7 +29,7 @@ Player::Player(SDL_Renderer *renderer, Player_State state) {
                     SDL_Rect{200, 0, 25, 22},
             }
     );
-    _sprites.emplace_back(_texture, tiles, 150);
+    _sprites.emplace_back(_texture, tiles, 100);
 
     // Left
     tiles = std::vector(
@@ -73,7 +73,7 @@ Player::Player(SDL_Renderer *renderer, Player_State state) {
                     SDL_Rect{775, 0, 25, 22},
             }
     );
-    _sprites.emplace_back(_texture, tiles, 150);
+    _sprites.emplace_back(_texture, tiles, 100);
 
     // Jump_Right
     tiles = std::vector(
@@ -87,35 +87,36 @@ Player::Player(SDL_Renderer *renderer, Player_State state) {
                     SDL_Rect{950, 0, 25, 22},
             }
     );
-    _sprites.emplace_back(_texture, tiles, 150);
+    _sprites.emplace_back(_texture, tiles, 100);
 }
 
-void Player::handle(PlayerControlContent content) {
+void Player::handle(PlayerControlContext ctx) {
     if (!_moveControl) {
         return;
     }
 
-    if (!(content.moveLeft ^ content.moveRight)) {
+    if (!(ctx.moveLeft ^ ctx.moveRight)) {
         _dx = 0;
-        _state = content.jump ? PS_JUMP : PS_STAY;
-    } else if (content.moveLeft) {
-        _state = content.jump ? PS_JUMP_LEFT : PS_LEFT;
+        _state = ctx.jump ? PS_JUMP : PS_STAY;
+    } else if (ctx.moveLeft) {
+        _state = ctx.jump ? PS_JUMP_LEFT : PS_LEFT;
         _dx = -2;
-    } else if (content.moveRight) {
-        _state = content.jump ? PS_JUMP_RIGHT : PS_RIGHT;
+    } else if (ctx.moveRight) {
+        _state = ctx.jump ? PS_JUMP_RIGHT : PS_RIGHT;
         _dx = 2;
     }
 
-    if (content.jump) {
+    if (ctx.jump) {
         _moveControl = false;
-        _status = 20;
+        _dy = 4;
+        _status = 24;
     }
 }
 
 
 void Player::update() {
     if (!_moveControl && _status) {
-        _y -= 4;
+        _y -= _dy;
         _status--;
     } else {
         if (_y <= 200) {
@@ -141,6 +142,8 @@ void Player::update() {
             if (_x > 775) {
                 _x = 775;
             }
+            break;
+        default:
             break;
     }
 

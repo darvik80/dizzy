@@ -46,15 +46,20 @@ bool Application::create(int argc, char *argv[]) {
 int Application::run() {
     Player player(_renderer, PS_STAY);
 
+    PlayerControlContext playerControlContent{false, false, false};
 
-    PlayerControlContent playerControlContent{false, false, false};
+    uint32_t MS_PER_UPDATE = 1000 / 60, lastTime = SDL_GetTicks(), lag = 0;
     while (true) {
+        uint32_t now = SDL_GetTicks();
+        lag += (now - lastTime);
+        lastTime = now;
+
         SDL_SetRenderDrawColor(_renderer, 0x51, 0xa2, 0xf3, 255);
         SDL_RenderClear(_renderer);
 
         SDL_Event event;
-
         while (SDL_PollEvent(&event)) {
+
             switch (event.type) {
                 case SDL_QUIT:
                     exit(0);
@@ -95,11 +100,19 @@ int Application::run() {
         }
 
         player.handle(playerControlContent);
-        player.update();
-        player.render(_renderer);
 
+        while (lag >= MS_PER_UPDATE) {
+            player.update();
+            lag -= MS_PER_UPDATE;
+        }
+
+        player.render(_renderer);
         SDL_RenderPresent(_renderer);
-        SDL_Delay(16);
+
+        long delta = (long)MS_PER_UPDATE - (long)(SDL_GetTicks() - now);
+        if (delta > 0) {
+            SDL_Delay(delta);
+        }
     }
 }
 

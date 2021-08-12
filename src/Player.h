@@ -19,10 +19,10 @@ enum Player_State {
     PS_COUNT
 };
 
-struct PlayerControlContent {
+struct PlayerControlContext {
     bool moveLeft = false;
     bool moveRight = false;
-    bool jump;
+    bool jump{};
 };
 
 class Player {
@@ -39,7 +39,7 @@ class Player {
 public:
     explicit Player(SDL_Renderer *renderer, Player_State state = PS_STAY);
 
-    void handle(PlayerControlContent content);
+    void handle(PlayerControlContext ctx);
     void update();
 
     void render(SDL_Renderer *renderer);
