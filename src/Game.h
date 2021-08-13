@@ -2,18 +2,18 @@
 // Created by Ivan Kishchenko on 08.08.2021.
 //
 
-#ifndef DIZZY_APPLICATION_H
-#define DIZZY_APPLICATION_H
+#ifndef DIZZY_GAME_H
+#define DIZZY_GAME_H
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_mixer.h>
 
 
-#define SCREEN_WIDTH 800
-#define SCREEN_HEIGHT 600
+#define SCREEN_WIDTH 1280
+#define SCREEN_HEIGHT 480
 
-class Application {
+class Game {
     SDL_Window* _window{};
     SDL_Renderer* _renderer{};
 public:
@@ -23,8 +23,8 @@ public:
 
     void destroy();
 
-    virtual ~Application();
+    virtual ~Game();
 };
 
 
-#endif //DIZZY_APPLICATION_H
+#endif //DIZZY_GAME_H

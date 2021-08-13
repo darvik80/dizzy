@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "Application.h"
+#include "Game.h"
 #include <tileson/tileson.hpp>
 
 int main(int argc, char *argv[]) {
@@ -117,7 +117,7 @@ int main(int argc, char *argv[]) {
     }
 
 
-    Application app;
+    Game app;
     if (!app.create(argc, argv)) {
         return 1;
     }

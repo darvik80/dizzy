@@ -108,8 +108,8 @@ void Player::handle(PlayerControlContext ctx) {
 
     if (ctx.jump) {
         _moveControl = false;
-        _dy = 4;
-        _status = 24;
+        _dy = 2;
+        _status = 16;
     }
 }
 
@@ -139,8 +139,8 @@ void Player::update() {
         case PS_RIGHT:
         case PS_JUMP_RIGHT:
             _x += _dx;
-            if (_x > 775) {
-                _x = 775;
+            if (_x > 615) {
+                _x = 615;
             }
             break;
         default:

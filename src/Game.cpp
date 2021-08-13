@@ -2,10 +2,11 @@
 // Created by Ivan Kishchenko on 08.08.2021.
 //
 
-#include "Application.h"
+#include "Game.h"
 #include "Player.h"
+#include "GameMap.h"
 
-bool Application::create(int argc, char *argv[]) {
+bool Game::create(int argc, char *argv[]) {
     SDL_LogSetAllPriority(SDL_LOG_PRIORITY_DEBUG);
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         SDL_LogCritical(SDL_LOG_CATEGORY_SYSTEM, "Couldn't initialize SDL: %s\n", SDL_GetError());
@@ -19,9 +20,11 @@ bool Application::create(int argc, char *argv[]) {
         destroy();
         return false;
     }
+
+
     SDL_LogInfo(SDL_LOG_CATEGORY_SYSTEM, "SDL Window created");
 
-    SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
+    //SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
 
     _renderer = SDL_CreateRenderer(_window, -1, SDL_RENDERER_ACCELERATED);
 
@@ -30,6 +33,8 @@ bool Application::create(int argc, char *argv[]) {
         destroy();
         return false;
     }
+
+    SDL_RenderSetLogicalSize(_renderer, SCREEN_WIDTH/2, SCREEN_HEIGHT/2);
 
     SDL_LogInfo(SDL_LOG_CATEGORY_SYSTEM, "SDL Renderer created");
 
@@ -43,8 +48,9 @@ bool Application::create(int argc, char *argv[]) {
     return true;
 }
 
-int Application::run() {
+int Game::run() {
     Player player(_renderer, PS_STAY);
+    GameMap gameMap(_renderer, "assets/dizzy_map.json");
 
     PlayerControlContext playerControlContent{false, false, false};
 
@@ -106,17 +112,20 @@ int Application::run() {
             lag -= MS_PER_UPDATE;
         }
 
+        gameMap.render(_renderer);
         player.render(_renderer);
         SDL_RenderPresent(_renderer);
 
-        long delta = (long)MS_PER_UPDATE - (long)(SDL_GetTicks() - now);
+        long delta = (long) MS_PER_UPDATE - (long) (SDL_GetTicks() - now);
         if (delta > 0) {
             SDL_Delay(delta);
+        } else {
+            SDL_LogCritical(SDL_LOG_CATEGORY_SYSTEM, "Skip frame!");
         }
     }
 }
 
-void Application::destroy() {
+void Game::destroy() {
     if (_renderer) {
         SDL_DestroyRenderer(_renderer);
         _renderer = nullptr;
@@ -130,6 +139,6 @@ void Application::destroy() {
     SDL_Quit();
 }
 
-Application::~Application() {
+Game::~Game() {
     destroy();
 }
