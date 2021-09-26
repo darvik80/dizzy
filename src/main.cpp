@@ -118,7 +118,7 @@ int main(int argc, char *argv[]) {
 
 
     Game app;
-    if (!app.create(argc, argv)) {
+    if (!app.create()) {
         return 1;
     }
 

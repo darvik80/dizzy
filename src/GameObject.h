@@ -1,17 +1,26 @@
 //
-// Created by Ivan Kishchenko on 10.08.2021.
+// Created by Ivan Kishchenko on 26.09.2021.
 //
 
-#ifndef DIZZY_GAMEOBJECT_H
-#define DIZZY_GAMEOBJECT_H
+#pragma once
 
 #include <SDL2/SDL.h>
+#include <system_error>
+#include "Order.h"
 
-class GameObject {
+class GameContext;
+
+class GameObject : public Ordered {
 public:
-    virtual void update() = 0;
-    virtual void render(SDL_Renderer* renderer, int x, int y) = 0;
+    int order() override {
+        return 0;
+    }
+
+    virtual std::error_code load(GameContext &ctx, std::string_view path) = 0;
+
+    virtual void update(GameContext &ctx) = 0;
+
+    virtual bool collision(GameContext &ctx, SDL_Rect rect) { return false; };
+
+    virtual void draw(GameContext &ctx) = 0;
 };
-
-
-#endif //DIZZY_GAMEOBJECT_H

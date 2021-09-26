@@ -1,128 +1,184 @@
 //
-// Created by Ivan Kishchenko on 12.08.2021.
+// Created by Ivan Kishchenko on 26.09.2021.
 //
 
 #include "Player.h"
 
-Player::Player(SDL_Renderer *renderer, Player_State state) {
-    _state = state;
-    _texture = std::make_shared<Texture>(renderer, "assets/images/dizzy.png");
+std::error_code Player::load(GameContext &ctx, std::string_view path) {
+    auto texture = std::make_shared<Texture>();
+    if (auto err = texture->load(ctx, path, SDL_Color{0x51, 0xa2, 0xf3})) {
+        return err;
+    }
 
     // Stay
     auto tiles = std::vector(
             {
-                    SDL_Rect{0, 0, 25, 22},
-                    SDL_Rect{25, 0, 25, 22}
+                    SDL_Rect{0, 0, PLAYER_WIDTH, PLAYER_HEIGHT},
+                    SDL_Rect{25, 0, PLAYER_WIDTH, PLAYER_HEIGHT}
             }
     );
-    _sprites.emplace_back(_texture, tiles, 150);
+    _sprites.emplace_back(new RepeatableAnimationSprite(texture, tiles, 150));
 
     // Jump
     tiles = std::vector(
             {
-                    SDL_Rect{50, 0, 25, 22},
-                    SDL_Rect{75, 0, 25, 22},
-                    SDL_Rect{100, 0, 25, 22},
-                    SDL_Rect{125, 0, 25, 22},
-                    SDL_Rect{150, 0, 25, 22},
-                    SDL_Rect{175, 0, 25, 22},
-                    SDL_Rect{200, 0, 25, 22},
+                    SDL_Rect{50, 0, PLAYER_WIDTH, PLAYER_HEIGHT},
+                    SDL_Rect{75, 0, PLAYER_WIDTH, PLAYER_HEIGHT},
+                    SDL_Rect{100, 0, PLAYER_WIDTH, PLAYER_HEIGHT},
+                    SDL_Rect{125, 0, PLAYER_WIDTH, PLAYER_HEIGHT},
+                    SDL_Rect{150, 0, PLAYER_WIDTH, PLAYER_HEIGHT},
+                    SDL_Rect{175, 0, PLAYER_WIDTH, PLAYER_HEIGHT},
+                    SDL_Rect{200, 0, PLAYER_WIDTH, PLAYER_HEIGHT},
             }
     );
-    _sprites.emplace_back(_texture, tiles, 100);
+    _sprites.emplace_back(new RepeatableAnimationSprite(texture, tiles, 100));
 
     // Left
     tiles = std::vector(
             {
-                    SDL_Rect{225, 0, 25, 22},
-                    SDL_Rect{250, 0, 25, 22},
-                    SDL_Rect{275, 0, 25, 22},
-                    SDL_Rect{300, 0, 25, 22},
-                    SDL_Rect{325, 0, 25, 22},
-                    SDL_Rect{350, 0, 25, 22},
-                    SDL_Rect{375, 0, 25, 22},
-                    SDL_Rect{400, 0, 25, 22},
+                    SDL_Rect{225, 0, PLAYER_WIDTH, PLAYER_HEIGHT},
+                    SDL_Rect{250, 0, PLAYER_WIDTH, PLAYER_HEIGHT},
+                    SDL_Rect{275, 0, PLAYER_WIDTH, PLAYER_HEIGHT},
+                    SDL_Rect{300, 0, PLAYER_WIDTH, PLAYER_HEIGHT},
+                    SDL_Rect{325, 0, PLAYER_WIDTH, PLAYER_HEIGHT},
+                    SDL_Rect{350, 0, PLAYER_WIDTH, PLAYER_HEIGHT},
+                    SDL_Rect{375, 0, PLAYER_WIDTH, PLAYER_HEIGHT},
+                    SDL_Rect{400, 0, PLAYER_WIDTH, PLAYER_HEIGHT},
             }
     );
-    _sprites.emplace_back(_texture, tiles, 150);
+    _sprites.emplace_back(new RepeatableAnimationSprite(texture, tiles, 150));
 
     // Right
     tiles = std::vector(
             {
-                    SDL_Rect{425, 0, 25, 22},
-                    SDL_Rect{450, 0, 25, 22},
-                    SDL_Rect{475, 0, 25, 22},
-                    SDL_Rect{500, 0, 25, 22},
-                    SDL_Rect{525, 0, 25, 22},
-                    SDL_Rect{550, 0, 25, 22},
-                    SDL_Rect{575, 0, 25, 22},
-                    SDL_Rect{600, 0, 25, 22},
+                    SDL_Rect{425, 0, PLAYER_WIDTH, PLAYER_HEIGHT},
+                    SDL_Rect{450, 0, PLAYER_WIDTH, PLAYER_HEIGHT},
+                    SDL_Rect{475, 0, PLAYER_WIDTH, PLAYER_HEIGHT},
+                    SDL_Rect{500, 0, PLAYER_WIDTH, PLAYER_HEIGHT},
+                    SDL_Rect{525, 0, PLAYER_WIDTH, PLAYER_HEIGHT},
+                    SDL_Rect{550, 0, PLAYER_WIDTH, PLAYER_HEIGHT},
+                    SDL_Rect{575, 0, PLAYER_WIDTH, PLAYER_HEIGHT},
+                    SDL_Rect{600, 0, PLAYER_WIDTH, PLAYER_HEIGHT},
             }
     );
-    _sprites.emplace_back(_texture, tiles, 150);
+    _sprites.emplace_back(new RepeatableAnimationSprite(texture, tiles, 150));
 
     // Jump_Left
     tiles = std::vector(
             {
-                    SDL_Rect{625, 0, 25, 22},
-                    SDL_Rect{650, 0, 25, 22},
-                    SDL_Rect{675, 0, 25, 22},
-                    SDL_Rect{700, 0, 25, 22},
-                    SDL_Rect{725, 0, 25, 22},
-                    SDL_Rect{750, 0, 25, 22},
-                    SDL_Rect{775, 0, 25, 22},
+                    SDL_Rect{625, 0, PLAYER_WIDTH, PLAYER_HEIGHT},
+                    SDL_Rect{650, 0, PLAYER_WIDTH, PLAYER_HEIGHT},
+                    SDL_Rect{675, 0, PLAYER_WIDTH, PLAYER_HEIGHT},
+                    SDL_Rect{700, 0, PLAYER_WIDTH, PLAYER_HEIGHT},
+                    SDL_Rect{725, 0, PLAYER_WIDTH, PLAYER_HEIGHT},
+                    SDL_Rect{750, 0, PLAYER_WIDTH, PLAYER_HEIGHT},
+                    SDL_Rect{775, 0, PLAYER_WIDTH, PLAYER_HEIGHT},
             }
     );
-    _sprites.emplace_back(_texture, tiles, 100);
+    _sprites.emplace_back(new RepeatableAnimationSprite(texture, tiles, 100));
 
     // Jump_Right
     tiles = std::vector(
             {
-                    SDL_Rect{800, 0, 25, 22},
-                    SDL_Rect{825, 0, 25, 22},
-                    SDL_Rect{850, 0, 25, 22},
-                    SDL_Rect{875, 0, 25, 22},
-                    SDL_Rect{900, 0, 25, 22},
-                    SDL_Rect{925, 0, 25, 22},
-                    SDL_Rect{950, 0, 25, 22},
+                    SDL_Rect{800, 0, PLAYER_WIDTH, PLAYER_HEIGHT},
+                    SDL_Rect{825, 0, PLAYER_WIDTH, PLAYER_HEIGHT},
+                    SDL_Rect{850, 0, PLAYER_WIDTH, PLAYER_HEIGHT},
+                    SDL_Rect{875, 0, PLAYER_WIDTH, PLAYER_HEIGHT},
+                    SDL_Rect{900, 0, PLAYER_WIDTH, PLAYER_HEIGHT},
+                    SDL_Rect{925, 0, PLAYER_WIDTH, PLAYER_HEIGHT},
+                    SDL_Rect{950, 0, PLAYER_WIDTH, PLAYER_HEIGHT},
             }
     );
-    _sprites.emplace_back(_texture, tiles, 100);
+    _sprites.emplace_back(new RepeatableAnimationSprite(texture, tiles, 100));
+
+    // Die
+    tiles = std::vector(
+            {
+                    SDL_Rect{200, 0, PLAYER_WIDTH, PLAYER_HEIGHT},
+                    SDL_Rect{175, 0, PLAYER_WIDTH, PLAYER_HEIGHT},
+                    SDL_Rect{150, 0, PLAYER_WIDTH, PLAYER_HEIGHT},
+                    SDL_Rect{175, 0, PLAYER_WIDTH, PLAYER_HEIGHT},
+            }
+    );
+    _sprites.emplace_back(new SingleAnimationSprite(texture, tiles, 150));
+
+    return {};
 }
 
-void Player::handle(PlayerControlContext ctx) {
+void Player::handleControl(Control &control) {
+    // DEBUG
+    if (control.die) {
+        _dx = _dy = 0;
+        _state = PS_DIE;
+        _moveControl = false;
+        return;
+    }
+
     if (!_moveControl) {
         return;
     }
 
-    if (!(ctx.moveLeft ^ ctx.moveRight)) {
+    if (!(control.moveLeft ^ control.moveRight)) {
         _dx = 0;
-        _state = ctx.jump ? PS_JUMP : PS_STAY;
-    } else if (ctx.moveLeft) {
-        _state = ctx.jump ? PS_JUMP_LEFT : PS_LEFT;
-        _dx = -2;
-    } else if (ctx.moveRight) {
-        _state = ctx.jump ? PS_JUMP_RIGHT : PS_RIGHT;
-        _dx = 2;
+        _state = control.jump ? PS_JUMP : PS_STAY;
+    } else if (control.moveLeft) {
+        _state = control.jump ? PS_JUMP_LEFT : PS_LEFT;
+        _dx = -1;
+    } else if (control.moveRight) {
+        _state = control.jump ? PS_JUMP_RIGHT : PS_RIGHT;
+        _dx = 1;
     }
 
-    if (ctx.jump) {
+    if (control.jump) {
         _moveControl = false;
-        _dy = 2;
-        _status = 16;
+        _dy = 1;
+        _status = 32;
     }
+
 }
 
+bool Player::collisionLeg(GameContext &ctx) {
+    for (auto &obj: ctx.objects) {
+        if (obj->collision(ctx, SDL_Rect{_x + 8, _y + PLAYER_HEIGHT, PLAYER_WIDTH - 16, 1})) {
+            return true;
+        }
+    }
 
-void Player::update() {
+    return false;
+}
+
+bool Player::collisionBody(GameContext &ctx) {
+    for (auto &obj: ctx.objects) {
+        if (obj->collision(ctx, SDL_Rect{_x, _y+4, PLAYER_WIDTH, PLAYER_HEIGHT-8})) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+void Player::update(GameContext &ctx) {
+    handleControl(ctx.control);
+
+    if (_state == PS_DIE) {
+        _sprites[_state]->update(ctx);
+        return;
+    }
+
+    int cnt = 4;
+    while (collisionLeg(ctx) && --cnt) {
+        _y--;
+    }
     if (!_moveControl && _status) {
         _y -= _dy;
         _status--;
-    } else {
-        if (_y <= 200) {
+        if (collisionBody(ctx)) {
             _y += _dy;
-        } else {
-            if (!_moveControl && !_sprites[_state].getFrameCount() - 1) {
+        }
+    } else {
+        _y += _dy;
+        if (collisionLeg(ctx)) {
+            if (!_moveControl && !_sprites[_state]->frames() - 1) {
                 _moveControl = true;
             }
         }
@@ -147,9 +203,9 @@ void Player::update() {
             break;
     }
 
-    _sprites[_state].update();
+    _sprites[_state]->update(ctx);
 }
 
-void Player::render(SDL_Renderer *renderer) {
-    _sprites[_state].render(renderer, _x, _y);
+void Player::draw(GameContext &ctx) {
+    _sprites[_state]->draw(ctx, SDL_Rect{_x, _y, PLAYER_WIDTH, PLAYER_HEIGHT});
 }

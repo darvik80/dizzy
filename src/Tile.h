@@ -2,19 +2,19 @@
 // Created by Ivan Kishchenko on 13.08.2021.
 //
 
-#ifndef DIZZY_TILE_H
-#define DIZZY_TILE_H
+#pragma once
 
 #include <SDL2/SDL.h>
 #include <vector>
 
 class Tile {
     std::vector<SDL_Rect> _frames;
+    std::vector<SDL_Rect> _collisions;
     int _curFrame{0};
     uint32_t _delay{0};
 public:
-    explicit Tile(const SDL_Rect &rect);
-    Tile(std::vector<SDL_Rect>& frames, uint32_t _delay);
+    explicit Tile(SDL_Rect rect, std::vector<SDL_Rect>& collisions);
+    Tile(std::vector<SDL_Rect>& frames, uint32_t _delay, std::vector<SDL_Rect>& collisions);
 
     const SDL_Rect& getRect() {
         if (_delay) {
@@ -23,7 +23,8 @@ public:
 
         return _frames[_curFrame];
     }
+
+    [[nodiscard]] const std::vector<SDL_Rect> &getCollisions() const {
+        return _collisions;
+    }
 };
-
-
-#endif //DIZZY_TILE_H

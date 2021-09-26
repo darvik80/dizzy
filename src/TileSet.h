@@ -2,8 +2,7 @@
 // Created by Ivan Kishchenko on 13.08.2021.
 //
 
-#ifndef DIZZY_TILESET_H
-#define DIZZY_TILESET_H
+#pragma once
 
 #include "Texture.h"
 #include "Tile.h"
@@ -14,10 +13,9 @@ class TileSet {
     Texture::Ptr _texture;
     std::vector<Tile> _tiles;
 public:
-    TileSet(SDL_Renderer* renderer, int width, int height, int border);
-    TileSet(SDL_Renderer* renderer, tson::Tileset* tileset);
+    TileSet(GameContext& ctx, tson::Tileset* tileset);
 
-    int getSize() {
+    size_t getSize() {
         return _tiles.size();
     }
 
@@ -29,8 +27,7 @@ public:
         return _tiles[0].getRect().h;
     }
 
-    void render(SDL_Renderer* renderer, int tileId, int x, int y);
+    bool collision(GameContext& ctx, SDL_Rect obj, int tileId, int x, int y);
+
+    void draw(GameContext& ctx, int tileId, int x, int y);
 };
-
-
-#endif //DIZZY_TILESET_H

@@ -1,23 +1,16 @@
 //
-// Created by Ivan Kishchenko on 08.08.2021.
+// Created by Ivan Kishchenko on 26.09.2021.
 //
 
-#ifndef DIZZY_GAME_H
-#define DIZZY_GAME_H
+#pragma once
 
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <SDL2/SDL_mixer.h>
-
-
-#define SCREEN_WIDTH 1280
-#define SCREEN_HEIGHT 480
 
 class Game {
     SDL_Window* _window{};
     SDL_Renderer* _renderer{};
 public:
-    bool create(int argc, char *argv[]);
+    bool create();
 
     int run();
 
@@ -25,6 +18,3 @@ public:
 
     virtual ~Game();
 };
-
-
-#endif //DIZZY_GAME_H

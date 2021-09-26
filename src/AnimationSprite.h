@@ -1,34 +1,45 @@
 //
-// Created by Ivan Kishchenko on 12.08.2021.
+// Created by Ivan Kishchenko on 26.09.2021.
 //
 
-#ifndef DIZZY_ANIMATIONSPRITE_H
-#define DIZZY_ANIMATIONSPRITE_H
+#pragma once
 
-#include "Sprite.h"
+#include "Drawable.h"
 #include "Texture.h"
 #include <vector>
 
-class AnimationSprite : public Sprite {
+class AnimationSprite: public Drawable {
     Texture::Ptr _refTexture;
+protected:
     std::vector<SDL_Rect> _frames;
-    int _delay;
-    uint32_t _curFrame{0};
+    uint64_t _delay;
+    size_t _curFrame;
 public:
-    AnimationSprite(Texture::Ptr texture, std::vector<SDL_Rect>& frames, int delay);
+    AnimationSprite(Texture::Ptr refTexture, std::vector<SDL_Rect>& frames, uint64_t delay);
 
-    void update() override;
-
-    void render(SDL_Renderer *renderer, int x, int y) override;
-
-    uint32_t getCurFrame() {
-        return _curFrame;
+    size_t frames() {
+        return _frames.size();
     }
 
-    uint32_t getFrameCount() {
-        return _frames.size();
+    void draw(GameContext &ctx, SDL_Rect rect) override;
+};
+
+class RepeatableAnimationSprite: public AnimationSprite {
+public:
+    RepeatableAnimationSprite(const Texture::Ptr &refTexture, std::vector<SDL_Rect> &frames, uint64_t delay)
+            : AnimationSprite(refTexture, frames, delay) {}
+
+    void update(GameContext& ctx) override{
+        _curFrame = ctx.strategyRepeat.nextFrame(ctx, _delay, _frames.size());
     }
 };
 
+class SingleAnimationSprite: public AnimationSprite {
+public:
+    SingleAnimationSprite(const Texture::Ptr &refTexture, std::vector<SDL_Rect> &frames, uint64_t delay)
+            : AnimationSprite(refTexture, frames, delay) {}
 
-#endif //DIZZY_ANIMATIONSPRITE_H
+    void update(GameContext& ctx) override{
+        _curFrame = ctx.strategySingle.nextFrame(ctx, _delay, _frames.size());
+    }
+};

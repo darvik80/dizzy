@@ -1,31 +1,30 @@
 //
-// Created by Ivan Kishchenko on 12.08.2021.
+// Created by Ivan Kishchenko on 26.09.2021.
 //
 
-#ifndef DIZZY_PLAYER_H
-#define DIZZY_PLAYER_H
+#pragma once
 
+#include "GameObject.h"
+#include "GameContext.h"
 #include "AnimationSprite.h"
 #include "Texture.h"
-#include "GameObject.h"
 
-enum Player_State {
-    PS_STAY,
-    PS_JUMP,
-    PS_LEFT,
-    PS_RIGHT,
-    PS_JUMP_LEFT,
-    PS_JUMP_RIGHT,
-    PS_COUNT
-};
+#define PLAYER_WIDTH 25
+#define PLAYER_HEIGHT 22
 
-struct PlayerControlContext {
-    bool moveLeft = false;
-    bool moveRight = false;
-    bool jump{};
-};
+class Player : public GameObject {
+    enum Player_State {
+        PS_STAY,
+        PS_JUMP,
+        PS_LEFT,
+        PS_RIGHT,
+        PS_JUMP_LEFT,
+        PS_JUMP_RIGHT,
+        PS_DIE,
+    };
 
-class Player {
+    std::vector<AnimationSprite*> _sprites;
+
     int _x{0};
     int _y{96};
 
@@ -34,16 +33,20 @@ class Player {
     int _dx{0};
     int _status = 0;
     Player_State _state{PS_STAY};
-    Texture::Ptr _texture{};
-    std::vector<AnimationSprite> _sprites;
+private:
+    void handleControl(Control& control);
+
+    bool collisionLeg(GameContext &ctx);
+    bool collisionBody(GameContext &ctx);
 public:
-    explicit Player(SDL_Renderer *renderer, Player_State state = PS_STAY);
 
-    void handle(PlayerControlContext ctx);
-    void update();
+    int order() override {
+        return 2;
+    }
 
-    void render(SDL_Renderer *renderer);
+    std::error_code load(GameContext &ctx, std::string_view path) override;
+
+    void update(GameContext &ctx) override;
+
+    void draw(GameContext &ctx) override;
 };
-
-
-#endif //DIZZY_PLAYER_H

@@ -2,21 +2,24 @@
 // Created by Ivan Kishchenko on 13.08.2021.
 //
 
-#ifndef DIZZY_GAMEMAP_H
-#define DIZZY_GAMEMAP_H
+#pragma once
 
-#include <SDL2/SDL.h>
 #include <vector>
+#include <memory>
 #include "TileSet.h"
+#include "GameObject.h"
 
-class GameMap {
+class GameMap : public GameObject {
     std::unique_ptr<TileSet> _tileSet;
     std::vector<std::vector<int>> _map;
 public:
-    explicit GameMap(SDL_Renderer* renderer, std::string_view path);
+    GameMap() = default;
 
-    void render(SDL_Renderer* renderer);
+    std::error_code load(GameContext &ctx, std::string_view path) override;
+
+    void update(GameContext &ctx) override;
+
+    bool collision(GameContext& ctx, SDL_Rect rect) override;
+
+    void draw(GameContext &ctx) override;
 };
-
-
-#endif //DIZZY_GAMEMAP_H

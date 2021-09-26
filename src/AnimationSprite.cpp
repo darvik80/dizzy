@@ -1,19 +1,15 @@
 //
-// Created by Ivan Kishchenko on 12.08.2021.
+// Created by Ivan Kishchenko on 26.09.2021.
 //
 
 #include "AnimationSprite.h"
 
-#include <utility>
+AnimationSprite::AnimationSprite(Texture::Ptr refTexture, std::vector<SDL_Rect>& frames, uint64_t delay)
+        : _refTexture(std::move(refTexture)), _frames(frames), _curFrame(0), _delay(delay) {
 
-AnimationSprite::AnimationSprite(Texture::Ptr texture, std::vector<SDL_Rect>& frames, int delay)
-: _refTexture(std::move(texture)), _frames(std::move(frames)), _delay(delay) {}
-
-void AnimationSprite::update() {
-    _curFrame = SDL_GetTicks() / _delay % _frames.size();
 }
 
-void AnimationSprite::render(SDL_Renderer *renderer, int x, int y) {
-    _refTexture->render(renderer, x, y, _frames[_curFrame]);
+void AnimationSprite::draw(GameContext &ctx, SDL_Rect rect) {
+    _refTexture->draw(ctx, _frames[_curFrame], rect);
 }
 

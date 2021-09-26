@@ -1,12 +1,13 @@
 //
-// Created by Ivan Kishchenko on 10.08.2021.
+// Created by Ivan Kishchenko on 25.09.2021.
 //
 
-#ifndef DIZZY_TEXTURE_H
-#define DIZZY_TEXTURE_H
+#pragma once
 
+#include <system_error>
 #include <string_view>
-#include <SDL2/SDL_image.h>
+
+#include "GameContext.h"
 
 class Texture {
     SDL_Texture* _texture{};
@@ -15,8 +16,10 @@ class Texture {
 public:
     typedef std::shared_ptr<Texture> Ptr;
 public:
-    explicit Texture(SDL_Renderer* renderer, std::string_view path);
-    void render(SDL_Renderer* renderer, int x, int y, const SDL_Rect& rect);
+
+    std::error_code load(GameContext& ctx, std::string_view path, SDL_Color color);
+
+    void draw(GameContext& ctx, SDL_Rect src, SDL_Rect dst);
 
     [[nodiscard]] int getWidth() const {
         return _width;
@@ -27,6 +30,3 @@ public:
 
     ~Texture();
 };
-
-
-#endif //DIZZY_TEXTURE_H

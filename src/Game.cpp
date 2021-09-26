@@ -1,30 +1,37 @@
 //
-// Created by Ivan Kishchenko on 08.08.2021.
+// Created by Ivan Kishchenko on 26.09.2021.
 //
 
 #include "Game.h"
+#include "GameContext.h"
 #include "Player.h"
 #include "GameMap.h"
 
-bool Game::create(int argc, char *argv[]) {
+#include <queue>
+#include <memory>
+
+#include <SDL2/SDL_image.h>
+
+#define SCREEN_WIDTH 1280
+#define SCREEN_HEIGHT 480
+
+bool Game::create() {
     SDL_LogSetAllPriority(SDL_LOG_PRIORITY_DEBUG);
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-        SDL_LogCritical(SDL_LOG_CATEGORY_SYSTEM, "Couldn't initialize SDL: %s\n", SDL_GetError());
+        SDL_LogCritical(SDL_LOG_CATEGORY_SYSTEM, "Couldn't initialize SDL: %s", SDL_GetError());
         return false;
     }
     SDL_LogInfo(SDL_LOG_CATEGORY_SYSTEM, "SDL Init success");
 
     _window = SDL_CreateWindow("Dizzy", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
     if (_window == nullptr) {
-        SDL_LogCritical(SDL_LOG_CATEGORY_SYSTEM, "Couldn't create SDL Window: %s\n", SDL_GetError());
+        SDL_LogCritical(SDL_LOG_CATEGORY_SYSTEM, "Couldn't create SDL Window: %s", SDL_GetError());
         destroy();
         return false;
     }
 
 
     SDL_LogInfo(SDL_LOG_CATEGORY_SYSTEM, "SDL Window created");
-
-    //SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
 
     _renderer = SDL_CreateRenderer(_window, -1, SDL_RENDERER_ACCELERATED);
 
@@ -49,10 +56,11 @@ bool Game::create(int argc, char *argv[]) {
 }
 
 int Game::run() {
-    Player player(_renderer, PS_STAY);
-    GameMap gameMap(_renderer, "assets/dizzy_map.json");
+    GameContext ctx{_renderer};
 
-    PlayerControlContext playerControlContent{false, false, false};
+    ctx.objects.emplace_back(std::make_shared<GameMap>())->load(ctx, "assets/dizzy_map.json");
+    ctx.objects.emplace_back(std::make_shared<Player>())->load(ctx, "assets/images/dizzy.png");
+    std::sort(ctx.objects.begin(), ctx.objects.end(), OrderedLess<GameObject>());
 
     uint32_t MS_PER_UPDATE = 1000 / 60, lastTime = SDL_GetTicks(), lag = 0;
     while (true) {
@@ -65,55 +73,46 @@ int Game::run() {
 
         SDL_Event event;
         while (SDL_PollEvent(&event)) {
-
-            switch (event.type) {
-                case SDL_QUIT:
-                    exit(0);
-                case SDL_KEYUP:
-                    switch (event.key.keysym.sym) {
-                        case SDLK_LEFT:
-                        case SDLK_z:
-                            playerControlContent.moveLeft = false;
-                            break;
-                        case SDLK_RIGHT:
-                        case SDLK_x:
-                            playerControlContent.moveRight = false;
-                            break;
-                        case SDLK_SPACE:
-                            playerControlContent.jump = false;
-                            break;
-                    }
+            if (event.type == SDL_QUIT) {
+                return 0;
+            }
+            switch (event.key.keysym.sym) {
+                case SDLK_LEFT:
+                case SDLK_z:
+                    ctx.control.moveLeft = event.type == SDL_KEYDOWN;
                     break;
-                case SDL_KEYDOWN:
-                    switch (event.key.keysym.sym) {
-                        case SDLK_LEFT:
-                        case SDLK_z:
-                            playerControlContent.moveLeft = true;
-                            break;
-                        case SDLK_RIGHT:
-                        case SDLK_x:
-                            playerControlContent.moveRight = true;
-                            break;
-                        case SDLK_SPACE:
-                            playerControlContent.jump = true;
-                            break;
-                    }
+                case SDLK_RIGHT:
+                case SDLK_x:
+                    ctx.control.moveRight = event.type == SDL_KEYDOWN;;
                     break;
-
-                default:
+                case SDLK_SPACE:
+                    ctx.control.jump = event.type == SDL_KEYDOWN;;
+                    break;
+                case SDLK_RETURN:
+                    ctx.control.enter = event.type == SDL_KEYDOWN;;
+                    break;
+                case SDLK_d:
+                    ctx.control.die = event.type == SDL_KEYDOWN;;
                     break;
             }
+            break;
+
         }
 
-        player.handle(playerControlContent);
-
+        ctx.millis = SDL_GetTicks();
         while (lag >= MS_PER_UPDATE) {
-            player.update();
+            for (auto& obj : ctx.objects) {
+                obj->update(ctx);
+            }
             lag -= MS_PER_UPDATE;
+            ctx.millis = SDL_GetTicks();
+        }
+        for (auto& obj : ctx.objects) {
+            obj->draw(ctx);
         }
 
-        gameMap.render(_renderer);
-        player.render(_renderer);
+        //gameMap.render(_renderer);
+        //player.render(_renderer);
         SDL_RenderPresent(_renderer);
 
         long delta = (long) MS_PER_UPDATE - (long) (SDL_GetTicks() - now);
