@@ -19,7 +19,7 @@ public:
 
     void update(GameContext &ctx) override;
 
-    bool collision(GameContext& ctx, SDL_Rect rect) override;
+    std::list<GameObjectAttributes> collision(GameContext& ctx, SDL_Rect rect) override;
 
     void draw(GameContext &ctx) override;
 };

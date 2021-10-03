@@ -108,7 +108,8 @@ std::error_code Player::load(GameContext &ctx, std::string_view path) {
 void Player::handleControl(Control &control) {
     // DEBUG
     if (control.die) {
-        _dx = _dy = 0;
+        _dx = 0;
+        _dy = 2;
         _state = PS_DIE;
         _moveControl = false;
         return;
@@ -131,15 +132,50 @@ void Player::handleControl(Control &control) {
 
     if (control.jump) {
         _moveControl = false;
-        _dy = 1;
-        _status = 32;
+        _dy = 2;
+        _status = 20;
     }
 
 }
 
-bool Player::collisionLeg(GameContext &ctx) {
+void Player::onCollisionLegs(GameContext &ctx, GameObjectAttributes &attr) {
+    if (_state == PS_DIE) {
+        if (attr.isCloud) {
+            if ((ctx.millis - _lastSec) > 150) {
+                _y++;
+                _lastSec = ctx.millis;
+            }
+        }
+        return;
+    }
+    if (!_moveControl && !_sprites[_state]->frames() - 1) {
+        _moveControl = true;
+    }
+
+    _y--;
+    if (attr.isCloud) {
+        if ((ctx.millis - _lastSec) > 150) {
+            _y++;
+            _lastSec = ctx.millis;
+        }
+    } else {
+        _y--;
+    }
+}
+
+void Player::onDamage(GameContext &ctx, GameObjectAttributes &attr) {
+    _state = PS_DIE;
+    _moveControl = false;
+}
+
+bool Player::collisionLegs(GameContext &ctx, int x, int y) {
     for (auto &obj: ctx.objects) {
-        if (obj->collision(ctx, SDL_Rect{_x + 8, _y + PLAYER_HEIGHT, PLAYER_WIDTH - 16, 1})) {
+        auto attrs = obj->collision(ctx, SDL_Rect{x + 8, y + PLAYER_HEIGHT, PLAYER_WIDTH - 16, 2});
+        for (auto attr: attrs) {
+            if (attr.isDamage) {
+                onDamage(ctx, attr);
+            }
+            onCollisionLegs(ctx, attr);
             return true;
         }
     }
@@ -147,10 +183,16 @@ bool Player::collisionLeg(GameContext &ctx) {
     return false;
 }
 
-bool Player::collisionBody(GameContext &ctx) {
+bool Player::collisionBody(GameContext &ctx, int x, int y) {
     for (auto &obj: ctx.objects) {
-        if (obj->collision(ctx, SDL_Rect{_x, _y+4, PLAYER_WIDTH, PLAYER_HEIGHT-8})) {
-            return true;
+        auto attrs = obj->collision(ctx, SDL_Rect{x, y + 4, PLAYER_WIDTH, PLAYER_HEIGHT - 8});
+        for (auto attr: attrs) {
+            if (attr.isDamage) {
+                onDamage(ctx, attr);
+            }
+            if (!attr.isCloud) {
+                return true;
+            }
         }
     }
 
@@ -162,28 +204,30 @@ void Player::update(GameContext &ctx) {
 
     if (_state == PS_DIE) {
         _sprites[_state]->update(ctx);
+        if (!collisionLegs(ctx, _x, _y - 1)) {
+            _y += 1;
+        }
+
+        if (collisionLegs(ctx, _x, _y)) {
+            _y -= 1;
+        }
+
         return;
     }
 
-    int cnt = 4;
-    while (collisionLeg(ctx) && --cnt) {
-        _y--;
-    }
     if (!_moveControl && _status) {
-        _y -= _dy;
         _status--;
-        if (collisionBody(ctx)) {
-            _y += _dy;
+        if (!collisionBody(ctx, _x, _y - _dy)) {
+            _y -= _dy;
         }
     } else {
         _y += _dy;
-        if (collisionLeg(ctx)) {
-            if (!_moveControl && !_sprites[_state]->frames() - 1) {
-                _moveControl = true;
-            }
-        }
     }
 
+    int cnt = 2;
+    while (collisionLegs(ctx, _x, _y - _dy) && --cnt) {
+
+    }
     switch (_state) {
         case PS_LEFT:
         case PS_JUMP_LEFT:

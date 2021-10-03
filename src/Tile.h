@@ -7,16 +7,25 @@
 #include <SDL2/SDL.h>
 #include <vector>
 
+#include "GameObjectAttributes.h"
+
+struct TileInfo {
+    SDL_Rect frame;
+    SDL_Rect collision;
+};
+
 class Tile {
-    std::vector<SDL_Rect> _frames;
-    std::vector<SDL_Rect> _collisions;
+
+    std::vector<TileInfo> _frames;
     int _curFrame{0};
     uint32_t _delay{0};
-public:
-    explicit Tile(SDL_Rect rect, std::vector<SDL_Rect>& collisions);
-    Tile(std::vector<SDL_Rect>& frames, uint32_t _delay, std::vector<SDL_Rect>& collisions);
 
-    const SDL_Rect& getRect() {
+    GameObjectAttributes _attr;
+public:
+    explicit Tile(TileInfo frame, GameObjectAttributes& attr);
+    Tile(std::vector<TileInfo>& frames, uint32_t _delay, GameObjectAttributes& attr);
+
+    const TileInfo& getTileInfo() {
         if (_delay) {
             _curFrame = (int)(SDL_GetTicks() / _delay % _frames.size());
         }
@@ -24,7 +33,7 @@ public:
         return _frames[_curFrame];
     }
 
-    [[nodiscard]] const std::vector<SDL_Rect> &getCollisions() const {
-        return _collisions;
+    [[nodiscard]] const GameObjectAttributes &getAttr() const {
+        return _attr;
     }
 };

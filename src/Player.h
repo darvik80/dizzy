@@ -33,11 +33,16 @@ class Player : public GameObject {
     int _dx{0};
     int _status = 0;
     Player_State _state{PS_STAY};
+
+    uint32_t _lastSec;
 private:
     void handleControl(Control& control);
 
-    bool collisionLeg(GameContext &ctx);
-    bool collisionBody(GameContext &ctx);
+    bool collisionLegs(GameContext &ctx, int x, int y);
+    bool collisionBody(GameContext &ctx, int x, int y);
+
+    void onDamage(GameContext &ctx, GameObjectAttributes& attr);
+    void onCollisionLegs(GameContext &ctx, GameObjectAttributes& attr);
 public:
 
     int order() override {

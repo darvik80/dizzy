@@ -1,24 +1,28 @@
 {
-    "activeFile": "dizzy_map.json",
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "dizzy_tiles.json",
     "expandedProjectPaths": [
         "."
     ],
     "file.lastUsedOpenFilter": "All Files (*)",
     "fileStates": {
         "dizzy_map.json": {
-            "scale": 1.3506,
-            "selectedLayer": 0,
+            "scale": 2.2417,
+            "selectedLayer": 2,
             "viewCenter": {
-                "x": 318.37701762179773,
-                "y": 166.59262549977788
+                "x": 148.5479769817549,
+                "y": 215.01539010572336
             }
         },
         "dizzy_map.tmx": {
             "scale": 3.31,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 557.0996978851963,
-                "y": 150.9063444108761
+                "x": 556.9486404833837,
+                "y": 150.75528700906344
             }
         },
         "dizzy_map_mirror.tmx": {
@@ -38,7 +42,8 @@
             }
         },
         "dizzy_sprite.json": {
-            "scaleInDock": 1
+            "scaleInDock": 1,
+            "scaleInEditor": 2.65
         },
         "dizzy_sprite.tsx": {
             "dynamicWrapping": false,
@@ -54,6 +59,7 @@
             "scaleInEditor": 2.65
         }
     },
+    "frame.defaultDuration": 150,
     "last.exportedFilePath": "/Users/darvik/Projects/cpp/dizzy/assets",
     "lastUsedTilesetExportFilter": "JSON tileset files (*.json)",
     "loadedWorlds": [
@@ -61,16 +67,20 @@
     ],
     "map.lastUsedFormat": "json",
     "openFiles": [
-        "dizzy_map.json"
+        "dizzy_map.json",
+        "dizzy_sprite.json",
+        "dizzy_tiles.json"
     ],
     "project": "dizzy.tiled-project",
+    "property.type": "bool",
     "recentFiles": [
         "dizzy_map.json",
-        "dizzy_sprite.tsx",
+        "dizzy_sprite.json",
         "dizzy_tiles.json",
+        "dizzy_map.tmx",
+        "dizzy_sprite.tsx",
         "dizzy_map_mirror.tmx",
         "dizzy_tiles.tsx",
-        "dizzy_map.tmx",
         "dizzy_room_1.tmx"
     ],
     "tileset.lastUsedFormat": "json"

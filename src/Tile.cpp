@@ -6,9 +6,10 @@
 
 #include <utility>
 
-Tile::Tile(SDL_Rect rect, std::vector<SDL_Rect>& collisions) : _collisions(collisions) {
-    _frames.push_back(rect);
+Tile::Tile(TileInfo frame, GameObjectAttributes& attr) : _attr(attr) {
+    _frames.push_back(frame);
 }
 
-Tile::Tile(std::vector<SDL_Rect>& frames, uint32_t delay, std::vector<SDL_Rect>& collisions) : _frames(std::move(frames)), _delay(delay), _collisions(collisions) {
+Tile::Tile(std::vector<TileInfo>& frames, uint32_t delay, GameObjectAttributes& attr)
+: _frames(std::move(frames)), _delay(delay), _attr(attr) {
 }

@@ -1,3 +1,7 @@
+# Dizzy fun
+
+![](https://raw.githubusercontent.com/darvik80/dizzy/master/doc/capture.gif)
+
 # Install deps
 
 ### SDL

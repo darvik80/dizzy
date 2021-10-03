@@ -37,13 +37,14 @@ void GameMap::update(GameContext &ctx) {
 
 }
 
-bool GameMap::collision(GameContext& ctx, SDL_Rect rect) {
+std::list<GameObjectAttributes> GameMap::collision(GameContext& ctx, SDL_Rect rect) {
+    std::list<GameObjectAttributes> objects;
     int x = 0, y = 0;
     for (const auto &col: _map) {
         for (int tileId: col) {
             if (tileId) {
                 if (_tileSet->collision(ctx, rect,tileId - 1, x, y)) {
-                    return true;
+                    objects.emplace_back(_tileSet->getTile(tileId - 1).getAttr());
                 }
             }
 
@@ -54,7 +55,7 @@ bool GameMap::collision(GameContext& ctx, SDL_Rect rect) {
         y += _tileSet->getTileHeight();
     }
 
-    return false;
+    return objects;
 }
 
 void GameMap::draw(GameContext &ctx) {

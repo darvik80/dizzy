@@ -7,6 +7,8 @@
 #include <SDL2/SDL.h>
 #include <system_error>
 #include "Order.h"
+#include "GameObjectAttributes.h"
+#include <list>
 
 class GameContext;
 
@@ -20,7 +22,7 @@ public:
 
     virtual void update(GameContext &ctx) = 0;
 
-    virtual bool collision(GameContext &ctx, SDL_Rect rect) { return false; };
+    virtual std::list<GameObjectAttributes> collision(GameContext &ctx, SDL_Rect rect) { return {}; };
 
     virtual void draw(GameContext &ctx) = 0;
 };

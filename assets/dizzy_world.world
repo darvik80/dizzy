@@ -1,14 +1,14 @@
 {
     "maps": [
         {
-            "fileName": "dizzy_map.tmx",
+            "fileName": "dizzy_map.json",
             "height": 240,
             "width": 320,
             "x": 0,
             "y": 0
         },
         {
-            "fileName": "dizzy_map_mirror.tmx",
+            "fileName": "dizzy_map_mirror.json",
             "height": 240,
             "width": 640,
             "x": 640,

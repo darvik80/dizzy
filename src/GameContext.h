@@ -37,7 +37,7 @@ struct Control {
 
 struct GameContext {
     SDL_Renderer* renderer{};
-    uint64_t millis{};
+    uint32_t millis{};
     Control control;
     AnimationStrategyRepeat strategyRepeat;
     AnimationStrategySingle strategySingle;

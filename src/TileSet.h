@@ -20,14 +20,19 @@ public:
     }
 
     int getTileWidth() {
-        return _tiles[0].getRect().w;
+        return _tiles[0].getTileInfo().frame.w;
     }
 
     int getTileHeight() {
-        return _tiles[0].getRect().h;
+        return _tiles[0].getTileInfo().frame.h;
     }
+
+    const Tile& getTile(size_t tileId) {
+        return _tiles[tileId];
+    }
+
 
     bool collision(GameContext& ctx, SDL_Rect obj, int tileId, int x, int y);
 
-    void draw(GameContext& ctx, int tileId, int x, int y);
+    void draw(GameContext& ctx, size_t tileId, int x, int y);
 };

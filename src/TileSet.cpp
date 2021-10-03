@@ -15,24 +15,51 @@ TileSet::TileSet(GameContext &ctx, tson::Tileset *tileset) {
             auto tile = tileset->getTile(tileId);
             auto rect = tile->getDrawingRect();
 
+            GameObjectAttributes attr{};
+            auto props = tile->getProperties();
+            if (auto prop = props.getProperty("cloud")) {
+                attr.isCloud = prop->getValue<bool>();
+            }
+            if (auto prop = props.getProperty("damage")) {
+                attr.isDamage = prop->getValue<bool>();
+            }
+
+            TileInfo mainFrame{
+                    SDL_Rect{rect.x, rect.y, rect.width, rect.height}
+            };
+
             auto layer = tile->getObjectgroup();
-            std::vector<SDL_Rect> collisions;
             for (const auto &obj: layer.getObjects()) {
                 auto s = obj.getSize();
                 auto p = obj.getPosition();
-                collisions.emplace_back(SDL_Rect{p.x, p.y, s.x, s.y});
+                mainFrame.collision = SDL_Rect{p.x, p.y, s.x, s.y};
+                break;
             }
 
             if (tile->getAnimation().any()) {
-                std::vector<SDL_Rect> frames;
+                std::vector<TileInfo> frames;
                 for (const auto &frame: tile->getAnimation().getFrames()) {
                     auto frameTile = tileset->getTile(frame.getTileId());
+
+                    TileInfo curFrame{};
+                    layer = frameTile->getObjectgroup();
+                    const auto objs = layer.getObjects();
+                    if (objs.empty()) {
+                        curFrame.collision = mainFrame.collision;
+                    } else {
+                        const auto obj = objs[0];
+                        auto s = obj.getSize();
+                        auto p = obj.getPosition();
+                        curFrame.collision = SDL_Rect{p.x, p.y, s.x, s.y};
+                    }
+
                     auto frameRect = frameTile->getDrawingRect();
-                    frames.push_back(SDL_Rect{frameRect.x, frameRect.y, frameRect.width, frameRect.height});
+                    curFrame.frame = SDL_Rect{frameRect.x, frameRect.y, frameRect.width, frameRect.height};
+                    frames.push_back(curFrame);
                 }
-                _tiles.emplace_back(frames, tile->getAnimation().getCurrentFrame()->getDuration(), collisions);
+                _tiles.emplace_back(frames, tile->getAnimation().getCurrentFrame()->getDuration(), attr);
             } else {
-                _tiles.emplace_back(SDL_Rect{rect.x, rect.y, rect.width, rect.height}, collisions);
+                _tiles.emplace_back(mainFrame, attr);
             }
             tileId++;
         }
@@ -40,25 +67,29 @@ TileSet::TileSet(GameContext &ctx, tson::Tileset *tileset) {
 
 }
 
-bool TileSet::collision(GameContext& ctx, SDL_Rect obj, int tileId, int x, int y) {
-    for (auto &collision: _tiles.at(tileId).getCollisions()) {
+bool TileSet::collision(GameContext &ctx, SDL_Rect obj, int tileId, int x, int y) {
+    auto &collision = _tiles.at(tileId).getTileInfo().collision;
+    if (collision.w || collision.h) {
         SDL_Rect rect{x + collision.x, y + collision.y, collision.w, collision.h};
-        if (Helper::hasCollision(obj, rect)) {
-            return true;
-        }
+        return Helper::hasCollision(obj, rect);
     }
 
     return false;
 }
 
-void TileSet::draw(GameContext &ctx, int tileId, int x, int y) {
-    SDL_Rect src = _tiles.at(tileId).getRect();
+void TileSet::draw(GameContext &ctx, size_t tileId, int x, int y) {
+    auto &tile = _tiles.at(tileId).getTileInfo();
+    SDL_Rect src = tile.frame;
     SDL_Rect dst{x, y, src.w, src.h};
     _texture->draw(ctx, src, dst);
 
-//    SDL_SetRenderDrawColor(ctx.renderer, 255, 0, 0, 0);
-//    for (auto &collision: _tiles.at(tileId).getCollisions()) {
-//        SDL_Rect rect{x + collision.x, y + collision.y, collision.w, collision.h};
+//    if (tile.collision.w || tile.collision.h) {
+//        if (_tiles.at(tileId).getAttr().isCloud) {
+//            SDL_SetRenderDrawColor(ctx.renderer, 0, 255, 0, 0);
+//        } else {
+//            SDL_SetRenderDrawColor(ctx.renderer, 255, 0, 0, 0);
+//        }
+//        SDL_Rect rect{x + tile.collision.x, y + tile.collision.y, tile.collision.w, tile.collision.h};
 //        SDL_RenderDrawRect(ctx.renderer, &rect);
 //    }
 }
