@@ -11,6 +11,7 @@
 #include <memory>
 
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_mixer.h>
 
 #define SCREEN_WIDTH 1280
 #define SCREEN_HEIGHT 480
@@ -41,7 +42,7 @@ bool Game::create() {
         return false;
     }
 
-    SDL_RenderSetLogicalSize(_renderer, SCREEN_WIDTH/2, SCREEN_HEIGHT/2);
+    SDL_RenderSetLogicalSize(_renderer, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
 
     SDL_LogInfo(SDL_LOG_CATEGORY_SYSTEM, "SDL Renderer created");
 
@@ -52,17 +53,30 @@ bool Game::create() {
         return false;
     }
 
+
+    //Initialize SDL_mixer
+    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) {
+        SDL_LogCritical(SDL_LOG_CATEGORY_SYSTEM, "SDL_mixer could not initialize! SDL_mixer Error: %s", Mix_GetError());
+    }
+
     return true;
 }
 
 int Game::run() {
     GameContext ctx{_renderer};
 
+    Mix_Music *music = Mix_LoadMUS("assets/music/main.ogg");
+
     ctx.objects.emplace_back(std::make_shared<GameMap>())->load(ctx, "assets/dizzy_map.json");
     ctx.objects.emplace_back(std::make_shared<Player>())->load(ctx, "assets/images/dizzy.png");
     std::sort(ctx.objects.begin(), ctx.objects.end(), OrderedLess<GameObject>());
 
     uint32_t MS_PER_UPDATE = 1000 / 60, lastTime = SDL_GetTicks(), lag = 0;
+
+    if (music) {
+        Mix_PlayMusic(music, -1);
+    }
+
     while (true) {
         uint32_t now = SDL_GetTicks();
         lag += (now - lastTime);
@@ -74,6 +88,7 @@ int Game::run() {
         SDL_Event event;
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) {
+                Mix_FreeMusic(music);
                 return 0;
             }
             switch (event.key.keysym.sym) {
@@ -101,13 +116,13 @@ int Game::run() {
 
         ctx.millis = SDL_GetTicks();
         while (lag >= MS_PER_UPDATE) {
-            for (auto& obj : ctx.objects) {
+            for (auto &obj: ctx.objects) {
                 obj->update(ctx);
             }
             lag -= MS_PER_UPDATE;
             ctx.millis = SDL_GetTicks();
         }
-        for (auto& obj : ctx.objects) {
+        for (auto &obj: ctx.objects) {
             obj->draw(ctx);
         }
 
@@ -133,6 +148,8 @@ void Game::destroy() {
     if (_window) {
         SDL_DestroyWindow(_window);
     }
+    Mix_Quit();
+
     IMG_Quit();
 
     SDL_Quit();
