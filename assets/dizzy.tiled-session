@@ -10,11 +10,11 @@
     "file.lastUsedOpenFilter": "All Files (*)",
     "fileStates": {
         "dizzy_map.json": {
-            "scale": 2.2417,
-            "selectedLayer": 2,
+            "scale": 1.1715,
+            "selectedLayer": -1,
             "viewCenter": {
-                "x": 148.5479769817549,
-                "y": 215.01539010572336
+                "x": 317.54161331626125,
+                "y": 273.1540759709774
             }
         },
         "dizzy_map.tmx": {
@@ -57,6 +57,14 @@
         "dizzy_tiles.tsx": {
             "scaleInDock": 2.24,
             "scaleInEditor": 2.65
+        },
+        "dizzy_world.json": {
+            "scale": 0.2598,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 1304.8498845265592,
+                "y": 1231.716705157814
+            }
         }
     },
     "frame.defaultDuration": 150,
@@ -74,6 +82,7 @@
     "project": "dizzy.tiled-project",
     "property.type": "bool",
     "recentFiles": [
+        "dizzy_world.json",
         "dizzy_map.json",
         "dizzy_sprite.json",
         "dizzy_tiles.json",

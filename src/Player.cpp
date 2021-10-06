@@ -148,18 +148,18 @@ void Player::onCollisionLegs(GameContext &ctx, GameObjectAttributes &attr) {
         }
         return;
     }
-    if (!_moveControl && !_sprites[_state]->frames() - 1) {
+    if (!_moveControl && _sprites[_state]->isEnd()) {
         _moveControl = true;
     }
 
-    _y--;
     if (attr.isCloud) {
+        _y--;
         if ((ctx.millis - _lastSec) > 150) {
             _y++;
             _lastSec = ctx.millis;
         }
     } else {
-        _y--;
+        _y -= _dy;
     }
 }
 
