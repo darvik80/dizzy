@@ -73,6 +73,13 @@ std::error_code Player::load(GameContext &ctx, std::string_view path) {
                     SDL_Rect{725, 0, PLAYER_WIDTH, PLAYER_HEIGHT},
                     SDL_Rect{750, 0, PLAYER_WIDTH, PLAYER_HEIGHT},
                     SDL_Rect{775, 0, PLAYER_WIDTH, PLAYER_HEIGHT},
+                    SDL_Rect{625, 0, PLAYER_WIDTH, PLAYER_HEIGHT},
+                    SDL_Rect{650, 0, PLAYER_WIDTH, PLAYER_HEIGHT},
+                    SDL_Rect{675, 0, PLAYER_WIDTH, PLAYER_HEIGHT},
+                    SDL_Rect{700, 0, PLAYER_WIDTH, PLAYER_HEIGHT},
+                    SDL_Rect{725, 0, PLAYER_WIDTH, PLAYER_HEIGHT},
+                    SDL_Rect{750, 0, PLAYER_WIDTH, PLAYER_HEIGHT},
+                    SDL_Rect{775, 0, PLAYER_WIDTH, PLAYER_HEIGHT},
             }
     );
     _sprites.emplace_back(new RepeatableAnimationSprite(texture, tiles, 100));
@@ -80,6 +87,13 @@ std::error_code Player::load(GameContext &ctx, std::string_view path) {
     // Jump_Right
     tiles = std::vector(
             {
+                    SDL_Rect{800, 0, PLAYER_WIDTH, PLAYER_HEIGHT},
+                    SDL_Rect{825, 0, PLAYER_WIDTH, PLAYER_HEIGHT},
+                    SDL_Rect{850, 0, PLAYER_WIDTH, PLAYER_HEIGHT},
+                    SDL_Rect{875, 0, PLAYER_WIDTH, PLAYER_HEIGHT},
+                    SDL_Rect{900, 0, PLAYER_WIDTH, PLAYER_HEIGHT},
+                    SDL_Rect{925, 0, PLAYER_WIDTH, PLAYER_HEIGHT},
+                    SDL_Rect{950, 0, PLAYER_WIDTH, PLAYER_HEIGHT},
                     SDL_Rect{800, 0, PLAYER_WIDTH, PLAYER_HEIGHT},
                     SDL_Rect{825, 0, PLAYER_WIDTH, PLAYER_HEIGHT},
                     SDL_Rect{850, 0, PLAYER_WIDTH, PLAYER_HEIGHT},
@@ -148,9 +162,6 @@ void Player::onCollisionLegs(GameContext &ctx, GameObjectAttributes &attr) {
         }
         return;
     }
-    if (!_moveControl && _sprites[_state]->isEnd()) {
-        _moveControl = true;
-    }
 
     if (attr.isCloud) {
         _y--;
@@ -202,6 +213,7 @@ bool Player::collisionBody(GameContext &ctx, int x, int y) {
 void Player::update(GameContext &ctx) {
     handleControl(ctx.control);
 
+    int curY = _y;
     if (_state == PS_DIE) {
         _sprites[_state]->update(ctx);
         if (!collisionLegs(ctx, _x, _y - 1)) {
@@ -225,8 +237,9 @@ void Player::update(GameContext &ctx) {
     }
 
     int cnt = 2;
+    bool hasCollisionLegs = false;
     while (collisionLegs(ctx, _x, _y - _dy) && --cnt) {
-
+        hasCollisionLegs = true;
     }
     switch (_state) {
         case PS_LEFT:
@@ -248,6 +261,13 @@ void Player::update(GameContext &ctx) {
     }
 
     _sprites[_state]->update(ctx);
+
+    if (hasCollisionLegs) {
+        if (!_moveControl && _sprites[_state]->isEnd()) {
+            _moveControl = curY <= _y;
+        }
+    }
+
 }
 
 void Player::draw(GameContext &ctx) {
